@@ -16,5 +16,5 @@ echo "CPU model"
 apptainer exec "$CONTAINER_IMAGE" bash -c "lscpu | grep 'Model name:'"
 
 echo "Python3 details:"
-apptainer exec "$CONTAINER_IMAGE" bash -c which python3
-apptainer exec "$CONTAINER_IMAGE" bash -c python3 --version
+apptainer exec "$CONTAINER_IMAGE" which python3
+apptainer exec "$CONTAINER_IMAGE" python3 --version
