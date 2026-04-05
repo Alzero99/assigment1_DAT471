@@ -5,7 +5,7 @@ import duckdb
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        sys.stderr.write(f'Usage: {sys.argv[0]} <input_csv> <SQL query>\n')
+        sys.stderr.write(f'Usage: {sys.argv[0]} <input_csv>\n')
         sys.exit(1)
     
     input_csv = sys.argv[1]
