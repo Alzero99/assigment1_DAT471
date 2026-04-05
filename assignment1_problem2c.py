@@ -9,7 +9,6 @@ if __name__ == "__main__":
         sys.exit(1)
     
     input_csv = sys.argv[1]
-    sql_query = sys.argv[2]
 
     with duckdb.connect(database=":memory:") as con:
         con.execute('CREATE VIEW hour AS SELECT * FROM ' + 
