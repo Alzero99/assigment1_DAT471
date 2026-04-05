@@ -4,7 +4,7 @@ import sys
 import duckdb
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         sys.stderr.write(f'Usage: {sys.argv[0]} <input_csv> <SQL query>\n')
         sys.exit(1)
     
@@ -23,4 +23,3 @@ if __name__ == "__main__":
         print(con.execute("SELECT hr,AVG(cnt) AS avg_hourly FROM hour GROUP BY hr ORDER BY avg_hourly DESC LIMIT 5").df())
         print("What was the average daily count of bike rentals in the month of January 2012?")
         print(con.execute("SELECT AVG(daily_count) AS avg_daily FROM ( SELECT dteday, SUM(cnt) AS daily_count FROM hour WHERE yr=1 AND mnth=1 GROUP BY dteday )").df())
-        print(con.execute(sql_query).df())

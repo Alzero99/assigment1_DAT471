@@ -5,7 +5,7 @@
 #SBATCH -t 00:05:00
 #SBATCH -J problem2c
 
-echo "Submitting assignment 1 problem 2c"
+echo "Running assignment 1 problem 2c"
 CONTAINER_IMAGE="/data/courses/2026_dat471_dit066/containers/assignment1.sif"
 CSV_FILE="/data/courses/2026_dat471_dit066/datasets/bike_sharing_hourly.csv"
 
