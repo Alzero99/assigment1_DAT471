@@ -1,4 +1,8 @@
 #!/bin/bash
+#SBATCH -p core
+#SBATCH -n 1
+#SBATCH -t 00:05:00
+#SBATCH -J problem2a
 echo "System information"
 echo "Hostname: $(hostname)"
 
