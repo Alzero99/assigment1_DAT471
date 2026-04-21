@@ -66,7 +66,6 @@ def get_top10(counts):
     """
     top10 = sorted(counts.items(), key=lambda x: x[1], reverse=True)[:10]
     top10 = [(count, word) for (word, count) in top10]
-    print("Top 10:", top10)
     return top10
 
 
@@ -105,7 +104,6 @@ def compute_checksum(counts):
     checksum = 0
     for word, count in counts.items():
         checksum += len(word) * count
-    print("Checksum:", checksum)
     return checksum
    # raise NotImplementedError
 
@@ -142,4 +140,9 @@ if __name__ == '__main__':
     global_counts = dict()
     for counts in file_counts:
         merge_counts(global_counts,counts)
+
+    top10 = get_top10(global_counts)
+    checksum = compute_checksum(global_counts)
+    print(f'Checksum: {checksum}')
+    print('Top 10:', top10)
     
