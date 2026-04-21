@@ -66,6 +66,7 @@ def get_top10(counts):
     """
     top10 = sorted(counts.items(), key=lambda x: x[1], reverse=True)[:10]
     top10 = [(count, word) for (word, count) in top10]
+    print("Top 10:", top10)
     return top10
 
 
@@ -104,6 +105,7 @@ def compute_checksum(counts):
     checksum = 0
     for word, count in counts.items():
         checksum += len(word) * count
+    print("Checksum:", checksum)
     return checksum
    # raise NotImplementedError
 
