@@ -131,18 +131,45 @@ if __name__ == '__main__':
         sys.stderr.write(f'{sys.argv[0]}: ERROR: Batch size must be positive (got {batch_size})!\n')
         quit(1)
 
+    start_time = time.perf_counter()
     files = [get_file(fn) for fn in get_filenames(path)]
+    time_2 = time.perf_counter()
 
     file_counts = list()
     for file in files:
         file_counts.append(count_words_in_file(file))
+    time_3 = time.perf_counter()
 
     global_counts = dict()
     for counts in file_counts:
         merge_counts(global_counts,counts)
 
+    time_4 = time.perf_counter()
+
+    #Time measurements
+    time_to_read = time_2 - start_time
+    time_to_count = time_3 - time_2
+    time_to_merge = time_4 - time_3
+    total_time = time_to_read + time_to_count + time_to_merge
+
+    #fraction of time spent in each block
+    frac_read = time_to_read / total_time
+    frac_count = time_to_count / total_time     #fraction that can be parallelized
+    frac_merge = time_to_merge / total_time
+
+    # Ahmdals law for upper bound on speedup 
+    theoretical_speedup = 1 / (1 - frac_count )
+
+
     top10 = get_top10(global_counts)
     checksum = compute_checksum(global_counts)
     print(f'Checksum: {checksum}')
     print('Top 10:', top10)
-    
+    print(f'Time to read files: {time_to_read:.2f} seconds')
+    print(f'Time to count words: {time_to_count:.2f} seconds')
+    print(f'Time to merge counts: {time_to_merge:.2f} seconds') 
+    print(f'Total time: {total_time:.2f} seconds')
+    print(f'Fraction of time spent reading: {frac_read:.2%}')
+    print(f'Fraction of time spent counting: {frac_count:.2%}')
+    print(f'Fraction of time spent merging: {frac_merge:.2%}')
+    print(f'theoretical_speedup (Ahmdahls): {theoretical_speedup:.2f}')
