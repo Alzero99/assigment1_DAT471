@@ -3,7 +3,7 @@ import argparse
 import sys
 import time
 import multiprocessing as mp
-import matplotlib.pyplot as plt
+
 
 def get_filenames(path):
     """
@@ -147,6 +147,8 @@ if __name__ == '__main__':
 
     #Time measurements
     total_time = time_4 - start_time
+    """
+    Container did not have matplotlib installed, so I ran this part separately on my local machine:
 
     workers = [1,2,4,8,16,32,64]
     times = [144.24 , 65.93 , 47.54 , 42.24 , 39.78 , 41.04 , 43.52]
@@ -166,7 +168,7 @@ if __name__ == '__main__':
     plt.title('Speedup vs Number of Workers')
     plt.legend()
     plt.grid()
-    
+    """
 
     checksum = compute_checksum(global_counts)
     print(f'Checksum: {checksum}') 
