@@ -146,6 +146,7 @@ if __name__ == '__main__':
         merge_counts(global_counts,counts)
 
 
+    top10 = get_top10(global_counts)
     checksum = compute_checksum(global_counts)
     print(f'Checksum: {checksum}')
-
+    print('Top 10:', top10)
