@@ -3,7 +3,6 @@ import argparse
 import sys
 import time
 import multiprocessing as mp
-import matplotlib.pyplot as plt
 
 def get_filenames(path):
     """
@@ -148,25 +147,6 @@ if __name__ == '__main__':
     #Time measurements
     total_time = time_4 - start_time
 
-    workers = [1,2,4,8,16,32,64]
-    times = [144.24 , 65.93 , 47.54 , 42.24 , 39.78 , 41.04 , 43.52]
-    speedups = []
-    theoretical_speedups = 1.30
-    for t in times:
-        speedup = times[0] / t
-        speedups.append(speedup)
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(workers, speedups, marker='o', label='Actual Speedup')
-    plt.axhline(y=theoretical_speedups, color='r', linestyle='--', label='Theoretical Speedup (1.30)')
-    plt.xscale('log', basex=2)
-    plt.xticks(workers)
-    plt.xlabel('Number of Workers')
-    plt.ylabel('Speedup')
-    plt.title('Speedup vs Number of Workers')
-    plt.legend()
-    plt.grid()
-    
 
     checksum = compute_checksum(global_counts)
     print(f'Checksum: {checksum}') 
