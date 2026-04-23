@@ -153,9 +153,9 @@ if __name__ == '__main__':
     workers = [1,2,4,8,16,32,64]
     times = [144.24 , 65.93 , 47.54 , 42.24 , 39.78 , 41.04 , 43.52]
     speedups = []
-    theoretical_speedups = 1.30
+    theoretical_speedups = 2.71
     for t in times:
-        speedup = times[0] / t
+        speedup = 69.77 / t
         speedups.append(speedup)
 
     plt.figure(figsize=(10, 6))

@@ -33,7 +33,7 @@ def get_file(path):
     with open(path,'r') as f:
         return f.read()
 
-def count_words_in_file(file):
+def count_words_in_file(filename):
     """
     Counts the number of occurrences of words in the file
     Whitespace is ignored
@@ -43,6 +43,7 @@ def count_words_in_file(file):
 
     Returns: Dictionary that maps words (strings) to counts (ints)
     """
+    file = get_file(filename)
     counts = dict()
     for word in file.split():
         if word in counts:
@@ -132,10 +133,10 @@ if __name__ == '__main__':
         quit(1)
 
     start_time = time.perf_counter()
-    files = [get_file(fn) for fn in get_filenames(path)]
+    filesname = list(get_filenames(path))   #gets filepaths, instead of serially reading files, we will read them in parallel using multiprocessing
     
     with mp.Pool(processes=num_workers) as pool:
-        file_counts = pool.map(count_words_in_file, files)    
+        file_counts = pool.map(count_words_in_file, filesname)    
 
 
     global_counts = dict()
