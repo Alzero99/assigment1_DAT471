@@ -34,15 +34,7 @@ def get_file(path):
         return f.read()
 
 def count_words_in_file(filename):
-    """
-    Counts the number of occurrences of words in the file
-    Whitespace is ignored
 
-    Parameters:
-    - file, string : the content of a file
-
-    Returns: Dictionary that maps words (strings) to counts (ints)
-    """
     file = get_file(filename)
     counts = dict()
     for word in file.split():
