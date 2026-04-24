@@ -47,7 +47,28 @@ def count_words_in_file(filename_queue,wordcount_queue,batch_size):
 
     Returns: None
     """
-    raise NotImplementedError
+    worker_word_counts = {}
+    batch_size_counter = 0
+    while True:
+        file = filename_queue.get()
+        if file is None:                                    #if we encounter None, we put the remaining counts in the queue and then put a None to signal end of input to the merger, then we break out of the loop
+            if worker_word_counts:
+                wordcount_queue.put(worker_word_counts)
+            wordcount_queue.put(None)
+            break
+        content_file = get_file(file)
+        for word in content_file.split():
+            if word in worker_word_counts:
+                worker_word_counts[word] += 1
+            else:
+                worker_word_counts[word] = 1
+        batch_size_counter += 1
+        if batch_size_counter >= batch_size:
+            wordcount_queue.put(worker_word_counts)
+            worker_word_counts = {}
+            batch_size_counter = 0
+
+
 
 
 
@@ -62,7 +83,9 @@ def get_top10(counts):
     Return value:
     A list of (count,word) pairs (int,str)
     """
-    raise NotImplementedError
+    top10 = sorted(counts.items(), key=lambda x: x[1], reverse=True)[:10]
+    top10 = [(count, word) for (word, count) in top10]
+    return top10
 
 
 
@@ -78,7 +101,24 @@ def merge_counts(out_queue,wordcount_queue,num_workers):
 
     Return value: None
     """
-    raise NotImplementedError
+    global_counts = {}
+    workers_done = 0
+    # while workers are still running, we keep merging counts from the queue into global_counts. 
+    while workers_done < num_workers:
+        counts_to_merge = wordcount_queue.get()
+        if counts_to_merge is None:
+            workers_done += 1
+        else:
+            for (k,v) in counts_to_merge.items():
+                if k not in global_counts:
+                    global_counts[k] = v
+                else:
+                    global_counts[k] += v
+    
+    checksum = compute_checksum(global_counts)
+    top10 = get_top10(global_counts)
+    out_queue.put((top10, checksum))
+
 
 
 
@@ -93,8 +133,10 @@ def compute_checksum(counts):
     Return value:
     The checksum (int)
     """
-    raise NotImplementedError
-
+    checksum = 0
+    for word, count in counts.items():
+        checksum += len(word) * count
+    return checksum
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Counts words of all the text files in the given directory')
@@ -118,6 +160,45 @@ if __name__ == '__main__':
     if batch_size < 1:
         sys.stderr.write(f'{sys.argv[0]}: ERROR: Batch size must be positive (got {batch_size})!\n')
         quit(1)
+
+    start_time = time.perf_counter()
+    file_name_queue = mp.Queue()
+    word_count_queue = mp.Queue()
+    out_queue = mp.Queue()
+
+    active_workers = 0
+    workers = []
+    while active_workers < num_workers:
+        word_count_process = mp.Process(target=count_words_in_file, args=(file_name_queue,word_count_queue,batch_size))
+        word_count_process.start()
+        active_workers += 1
+        workers.append(word_count_process)
+
+    # merge process
+    merger_process = mp.Process(target=merge_counts, args=(out_queue,word_count_queue,num_workers))
+    merger_process.start()
+
+    # put filenames in the queue
+    for filename in get_filenames(path):
+        file_name_queue.put(filename)
+
+    # put None for each worker to signal end of input, as each worker will grab from queue until it encounters None
+    for worker in workers:
+        file_name_queue.put(None)
+
+    # synchronize with merger process and get the output
+    top10, checksum = out_queue.get()
+
+    for worker_process in workers:
+        worker_process.join()
+
+    merger_process.join()
+
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
+    print(f'Execution time: {execution_time:.2f} seconds')
+    print(f'Checksum: {checksum}')
+    print(f'Top 10 words: {top10}')
 
     # construct workers and queues
     # construct a special merger process
