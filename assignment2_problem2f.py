@@ -76,7 +76,7 @@ def get_top10(counts):
     """
     Determines the 10 words with the most occurrences.
     Ties can be solved arbitrarily.
-
+ 
     Parameters:
     - counts, dictionary : a mapping from words (str) to counts (int)
     

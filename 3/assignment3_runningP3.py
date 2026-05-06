@@ -26,6 +26,7 @@ for runtime in times:
 
 
 # Plotting the results
+speedups = [1, 1.24, 2.33, 3.33, 3.63, 3.74]
 plt.plot(cores, speedups, marker='o')
 plt.xlabel('Number of Cores')
 plt.ylabel('Speedup')
