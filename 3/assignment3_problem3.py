@@ -20,7 +20,7 @@ class MRJobTwitterFollows(MRJob):
             id_following_count = 0
         
         else:
-            id_following_count = len(follows.split(','))
+            id_following_count = len(follows.split())
 
         yield "stats", (user_id, id_following_count, id_following_count == 0)
 
