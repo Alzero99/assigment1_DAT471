@@ -26,10 +26,11 @@ for runtime in times:
 
 
 # Plotting the results
-speedups = [1, 1.24, 2.33, 3.33, 3.63, 3.74]
+#speedups = [1, 1.24, 2.33, 3.33, 3.63, 3.74] # Part 3
+speedups = [1, 1.80, 2.85, 4.06, 4.62, 4.29]  # part 4
 plt.plot(cores, speedups, marker='o')
 plt.xlabel('Number of Cores')
 plt.ylabel('Speedup')
 plt.title('Scalability of Twitter Data Processing')
-plt.savefig('scalability_plot.png')  # Save the plot as a PNG file
+plt.savefig('scalability_plot4.png')  # Save the plot as a PNG file
 plt.show()

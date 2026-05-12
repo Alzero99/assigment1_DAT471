@@ -42,7 +42,8 @@ class MRJobTwitterFollowers(MRJob):
     def reducer_follower_count(self,user_id, values):
         follower_count = sum(values)
         yield user_id, follower_count
-
+        
+#------------------Step 2------------------#
     def mapper_stats(self, user_id, follower_count):
         yield "stats", (user_id, follower_count, follower_count, 1, follower_count == 0)
 
