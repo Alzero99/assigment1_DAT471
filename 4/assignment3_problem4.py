@@ -30,8 +30,8 @@ if __name__ == '__main__':
             following_count = len(follows.split(","))
         return (user_id, following_count)
     
-    user_following_counts = lines.map(user_following_count)
-    max_number_users = user_following_counts.max(key=lambda x: x[1]).cache()  # Cache the RDD to avoid recomputation
+    user_following_counts = lines.map(user_following_count).cache() 
+    max_number_users = user_following_counts.max(key=lambda x: x[1]) 
     total_following_all_users = user_following_counts.map(lambda x: x[1]).sum()
     number_users = user_following_counts.count()
     count_zero_following = user_following_counts.filter(lambda x: x[1] == 0).count()    
