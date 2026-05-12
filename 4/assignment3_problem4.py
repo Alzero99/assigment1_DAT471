@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     # the first ??? should be the twitter id
     print(f'max follows: {max_number_users[0]} follows {max_number_users[1]}')
-    print(f'users follow on average: {average_following:.2f}')
+    print(f'users follow on average: {average_following:.5f}')
     print(f'number of user who follow no-one: {count_zero_following}')
     print(f'num workers: {args.num_workers}')
     print(f'total time: {total_time}')
