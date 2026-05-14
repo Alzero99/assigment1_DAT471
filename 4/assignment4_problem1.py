@@ -20,6 +20,7 @@ if __name__ == '__main__':
     lines = sc.textFile(args.filename)
 
     # fill in your code here
+-    # Helper function to compute the number of follows for each user similar to assignment 3, but now we will use Spark transformations and actions.
     def user_following_count(line):
         user_id, follows = line.split(":",1)
         follows = follows.strip()
@@ -30,11 +31,11 @@ if __name__ == '__main__':
             following_count = len(follows.split(","))
         return (user_id, following_count)
     
-    user_following_counts = lines.map(user_following_count).cache() 
-    max_number_users = user_following_counts.max(key=lambda x: x[1]) 
+    user_following_counts = lines.map(user_following_count).cache()  # parsinfg the data and caching it for later use
+    max_number_users = user_following_counts.max(key=lambda x: x[1]) # search tuple with max number of follows, x[1] is the following count
     total_following_all_users = user_following_counts.map(lambda x: x[1]).sum()
     number_users = user_following_counts.count()
-    count_zero_following = user_following_counts.filter(lambda x: x[1] == 0).count()    
+    count_zero_following = user_following_counts.filter(lambda x: x[1] == 0).count()  # filters the RDD to only include users with zero following and counts them 
     average_following = total_following_all_users / number_users
     end = time.time()
     
