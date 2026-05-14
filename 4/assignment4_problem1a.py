@@ -24,6 +24,7 @@ if __name__ == '__main__':
     def user_following_count(line):
         user_id, follows = line.split(":",1)
         follows = follows.strip()
+        user_id = user_id.strip()
 
         if follows == "":
             following_count = 0
