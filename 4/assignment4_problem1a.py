@@ -29,7 +29,7 @@ if __name__ == '__main__':
         if follows == "":
             following_count = 0
         else:
-            following_count = len([x for x in follows.split(",") if x.strip() != ""])  # count the number of non-empty follows])
+            following_count = len([x for x in follows.split() if x.strip() != ""])  # count the number of non-empty follows])
         return (user_id, following_count)
     
     user_following_counts = lines.map(user_following_count).cache()  # parsinfg the data and caching it for later use
