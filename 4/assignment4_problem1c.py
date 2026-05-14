@@ -27,7 +27,7 @@ if __name__ == '__main__':
         if followers == "":
             return []
         
-        followed = followers.split(",")
+        followed = followers.split()
         #spark expects an iterable, so we return a list of tuples (user_id, followed_user) for each followed user
         return [(user_id, followed_user) for followed_user in followed]
     
