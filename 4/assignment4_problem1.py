@@ -20,7 +20,7 @@ if __name__ == '__main__':
     lines = sc.textFile(args.filename)
 
     # fill in your code here
--    # Helper function to compute the number of follows for each user similar to assignment 3, but now we will use Spark transformations and actions.
+    # Helper function to compute the number of follows for each user similar to assignment 3, but now we will use Spark transformations and actions.
     def user_following_count(line):
         user_id, follows = line.split(":",1)
         follows = follows.strip()
