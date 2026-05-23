@@ -24,9 +24,8 @@ def murmur3_32(key, seed):
     hash1 = seed & 0xffffffff
     
 
-    for i in range(0, length_key//4):
-        #working with byte positions.
-        index = i*4
+    for index in range(0, length_key - (length_key % 4), 4):
+
 
         # idea: tkae 4 separate bytes and combine them into a 32-bit word 
         k1 = key[index] | (key[index+1] << 8) | (key[index+2] << 16) | (key[index+3] << 24)
@@ -66,8 +65,7 @@ def murmur3_32(key, seed):
     hash1 = (hash1 * 0xc2b2ae35) & 0xffffffff
     hash1 ^= (hash1 >> 16)      
 
-    return hash1
-
+    return hash1 & 0xffffffff
 def auto_int(x):
     """Auxiliary function to help convert e.g. hex integers"""
     return int(x,0)
