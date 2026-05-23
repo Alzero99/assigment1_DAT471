@@ -24,7 +24,7 @@ def murmur3_32(key, seed):
     hash1 = seed & 0xffffffff
     
 
-    for i in range(0, length_key//4):
+    for index in range(0, length_key - (length_key % 4), 4):
         #working with byte positions.
         index = i*4
 
