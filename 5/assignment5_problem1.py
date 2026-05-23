@@ -65,7 +65,7 @@ def murmur3_32(key, seed):
     hash1 = (hash1 * 0xc2b2ae35) & 0xffffffff
     hash1 ^= (hash1 >> 16)      
 
-    return hash1
+    return hash1 & 0xffffffff
 
 def auto_int(x):
     """Auxiliary function to help convert e.g. hex integers"""
