@@ -1,7 +1,7 @@
 from assignment5_problem1 import murmur3_32
 from collections import Counter
 import statistics
-import matplotlib.pyplot as plt
+
 
 file_path = "/data/courses/2026_dat471_dit066/datasets/words"
 
@@ -37,8 +37,13 @@ print("Standard deviation:", std)
 print("Collisions:", collisions)
 print("Collision probability:", collision_probability)
 
-plt.bar(range(m), [freq.get(i, 0) for i in range(m)])
-plt.xlabel("Hash value using lowest 7 bits")
-plt.ylabel("Frequency")
-plt.title("Frequency distribution of Murmur3_32 hash values")
-plt.savefig("problem1b_histogram.png")
+with open("histogram_data.txt", "w") as out:
+    for i in range(m):
+        out.write(f"{i} {freq.get(i,0)}\n")
+
+with open("problem1b_stats.txt", "w") as out:
+    out.write(f"Number of keys: {n}\n")
+    out.write(f"Mean: {mean}\n")
+    out.write(f"Standard deviation: {std}\n")
+    out.write(f"Collisions: {collisions}\n")
+    out.write(f"Collision probability: {collision_probability}\n")
