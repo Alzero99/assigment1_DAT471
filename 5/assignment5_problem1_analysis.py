@@ -1,96 +1,44 @@
-#!/usr/bin/env python3
+from assignment5_problem1 import murmur3_32
+from collections import Counter
+import statistics
+import matplotlib.pyplot as plt
 
-import argparse
+file_path = "/data/courses/2026_dat471_dit066/datasets/words"
 
-def rol32(x,k):
-    """Auxiliary function (left rotation for 32-bit words)"""
-    return ((x << k) | (x >> (32-k))) & 0xffffffff
+seed = 0xee418b6c
+m = 128
+mask = m - 1
 
-def murmur3_32(key, seed):
-    """Computes the 32-bit murmur3 hash"""
-    key = key.encode('utf-8')
-    length_key = len(key)
-    
+values = []
 
-    # derived from murmur3 original implementation
-    c1 = 0xcc9e2d51
-    c2 = 0x1b873593
-    r1 = 15
-    r2 = 13
-    m = 5
-    n = 0xe6546b64
-    
-    #initialization of the hash value
-    hash1 = seed & 0xffffffff
-    
+with open(file_path, "r", encoding="utf-8") as f:
+    for line in f:
+        key = line.strip()
+        h = murmur3_32(key, seed)
+        value = h & mask
+        values.append(value)
 
-    for index in range(0, length_key - (length_key % 4), 4):
+freq = Counter(values)
 
+mean = statistics.mean(values)
+std = statistics.stdev(values)
 
-        # idea: tkae 4 separate bytes and combine them into a 32-bit word 
-        k1 = key[index] | (key[index+1] << 8) | (key[index+2] << 16) | (key[index+3] << 24)
+collisions = 0
+for count in freq.values():
+    collisions += count * (count - 1) // 2
 
-        # take number and mix it up with some operations (multiplication, rotation, xor)
-        # the & 0xffffffff is to ensure we are working with 32-bit words and avoid overflow issues in Python
-        k1 = (k1 * c1) & 0xffffffff
-        k1 = rol32(k1,r1)
-        k1 = (k1 * c2) & 0xffffffff
+n = len(values)
+key_pairs = n * (n - 1) // 2
+collision_probability = collisions / key_pairs
 
-        hash1 = hash1 ^ k1
-        hash1 = rol32(hash1,r2)
-        hash1 = ((hash1*m) + n) & 0xffffffff    
+print("Number of keys:", n)
+print("Mean:", mean)
+print("Standard deviation:", std)
+print("Collisions:", collisions)
+print("Collision probability:", collision_probability)
 
-
-    # handle the remaining bytes (if the length of the key is not a multiple of 4)
-    remaining_bytes = length_key % 4
-    if remaining_bytes > 0:
-        index = (length_key//4)*4
-        k1 = 0
-        if remaining_bytes >= 3:
-            k1 |= key[index+2] << 16
-        if remaining_bytes >= 2:
-            k1 |= key[index+1] << 8
-        if remaining_bytes >= 1:
-            k1 |= key[index]
-
-        k1 = (k1 * c1) & 0xffffffff
-        k1 = rol32(k1,r1)
-        k1 = (k1 * c2) & 0xffffffff
-        hash1 ^= k1
-    # finalization step to mix the bits of the hash value
-    hash1 ^= length_key
-    hash1 ^= (hash1 >> 16)
-    hash1 = (hash1 * 0x85ebca6b) & 0xffffffff
-    hash1 ^= (hash1 >> 13)
-    hash1 = (hash1 * 0xc2b2ae35) & 0xffffffff
-    hash1 ^= (hash1 >> 16)      
-
-    return hash1 & 0xffffffff
-
-def auto_int(x):
-    """Auxiliary function to help convert e.g. hex integers"""
-    return int(x,0)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Computes MurMurHash3 for the keys.'
-    )
-    parser.add_argument('key',nargs='*',help='key(s) to be hashed',type=str)
-    parser.add_argument('-s','--seed',type=auto_int,default=0,help='seed value')
-    args = parser.parse_args()
-
-    seed = args.seed
-    for key in args.key:
-        h = murmur3_32(key,seed)
-        print(f'{h:#010x}\t{key}')
-
-    file_path = '/data/courses/2026_dat471_dit066/datasets/words'
-    with open(file_path,'r') as f:
-        seed = 0xee418b6c
-        for line in f:
-            key = line.strip()
-            h = murmur3_32(key,seed)
-            value = h & 127
-            print(f'{key}\t{value}')
-
-        
+plt.bar(range(m), [freq.get(i, 0) for i in range(m)])
+plt.xlabel("Hash value using lowest 7 bits")
+plt.ylabel("Frequency")
+plt.title("Frequency distribution of Murmur3_32 hash values")
+plt.savefig("problem1b_histogram.png")
