@@ -1,0 +1,5 @@
+Number of keys: 420769
+Mean: 63.4832318920833
+Standard deviation: 36.96854180743496
+Collisions: 691588133
+Collision probability: 0.007812519038823322
