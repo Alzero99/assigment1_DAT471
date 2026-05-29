@@ -4,6 +4,7 @@ import pandas as pd
 import csv
 import sys
 import time
+import cupy as cp
 
 def linear_scan(X, Q, b = None):
     """
@@ -14,21 +15,34 @@ def linear_scan(X, Q, b = None):
     Returns an m-vector of indices I; the value i reports the row in X such 
     that the Euclidean norm of ||X[I[i],:]-Q[i]|| is minimal
     """
-    n = X.shape[0]
+
     m = Q.shape[0]
-    I = np.zeros(m,dtype=np.int64)
-    for i in range(m):
-        dist_min = np.inf
-        j_min = -1
-        q = Q[i,:]
-        for j in range(n):
-            x = X[j,:]
-            dist = np.linalg.norm(x-q)
-            if dist < dist_min:
-                dist_min = dist
-                j_min = j
-        I[i] = j_min
-    return I
+    I = cp.zeros(m,dtype=cp.int64)
+
+    # copy data to GPU
+    X_gpu = cp.asarray(X)
+    Q_gpu = cp.asarray(Q)
+
+
+    batch_size = b if b is not None else m
+
+
+    # looping over batches instead of individual queries
+    for i in range(0,m,batch_size):
+        current_batch = Q_gpu[i:i+batch_size]
+
+        # parir wise distance 
+        # we can use broadcasting to compute the pairwise distances between the current batch of queries and all the dataset vectors in X.
+        # current_batch[:, None, :] adds a new axis to current_batch, making it of shape (batch_size, 1, d). "treat queries as rows"
+        distances = cp.linalg.norm(current_batch[:, None, :] - X_gpu[None, :, :], axis=2)
+
+        # Euclidean distance 
+        I[i:i+batch_size] = cp.argmin(distances, axis=1)
+
+    cp.cuda.Stream.null.synchronize()
+
+    return cp.asnumpy(I)
+  
 
 def load_glove(fn):
     """
