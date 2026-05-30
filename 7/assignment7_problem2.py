@@ -7,25 +7,26 @@ import time
 import cupy as cp
 
 def linear_scan(X, Q, b = None):
-    """
-    Perform linear scan for querying nearest neighbor.
-    X: n*d dataset
-    Q: m*d queries
-    b: optional batch size (ignored in this implementation)
-    Returns an m-vector of indices I; the value i reports the row in X such 
-    that the Euclidean norm of ||X[I[i],:]-Q[i]|| is minimal
-    """
+
 
     m = Q.shape[0]
-    I = cp.zeros(m,dtype=cp.int64)
 
+
+    
+    # dummy transfers, construct small arrays and transfer them to GPU 
+    dummy_X = cp.asarray(np.zeros((1, X.shape[1]), dtype=np.float32))
+    dummy_Q = cp.asarray(np.zeros((1, Q.shape[1]), dtype=np.float32))
+
+    time_start = time.time()
     # copy data to GPU
     X_gpu = cp.asarray(X)
     Q_gpu = cp.asarray(Q)
+    cp.cuda.Stream.null.synchronize()
+    time_1 = time.time()
 
 
     batch_size = b if b is not None else m
-
+    I_gpu= cp.zeros(m,dtype=cp.int64)
 
     # looping over batches instead of individual queries
     for i in range(0,m,batch_size):
@@ -37,12 +38,25 @@ def linear_scan(X, Q, b = None):
         distances = cp.linalg.norm(current_batch[:, None, :] - X_gpu[None, :, :], axis=2)
 
         # Euclidean distance 
-        I[i:i+batch_size] = cp.argmin(distances, axis=1)
+        I_gpu[i:i+batch_size] = cp.argmin(distances, axis=1)
 
     cp.cuda.Stream.null.synchronize()
+    time_2 = time.time()
 
-    return cp.asnumpy(I)
-  
+    I = cp.asnumpy(I_gpu)   
+    cp.cuda.Stream.null.synchronize()
+    time_end = time.time()
+
+    gpu_transfer_time = time_1 - time_start
+    compute_time_gpu = time_2 - time_1
+    time_transfer_cpu = time_end - time_2
+
+    
+    print(f"Time to transfer data to GPU: {gpu_transfer_time}")
+    print(f"GPU computation time: {compute_time_gpu}")
+    print(f"Time to transfer results to CPU: {time_transfer_cpu}")
+
+    return I
 
 def load_glove(fn):
     """
@@ -147,3 +161,5 @@ if __name__ == '__main__':
     print(f'Loading dataset ({n} vectors of length {d}) took', t2-t1)
     print(f'Performing {m} NN queries took', t7-t6)
     print(f'Number of erroneous queries: {num_erroneous}')
+
+    
